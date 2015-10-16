@@ -21,11 +21,15 @@ public class Agent {
     inst.addTransformer(new ClassFileTransformer() {
       @Override
       public byte[] transform(ClassLoader classLoader, String s, Class<?> aClass, ProtectionDomain protectionDomain, byte[] bytes) throws IllegalClassFormatException {
+        // En caso de que se necesite modificar la clase que se desea intervenir se agregar cambia aqui pero a modo de que fuesen carpetas
         if ("org/springframework/web/servlet/DispatcherServlet".equals(s)) {
           try {
             ClassPool cp = ClassPool.getDefault();
+            // Se carga el class loader del web
             cp.insertClassPath(new LoaderClassPath(classLoader));
+            // Se carga la clase necesaria con el qualified name
             CtClass cc = cp.get("org.springframework.web.servlet.DispatcherServlet");
+            // Se interviene el metodo que se requiere
             CtMethod m = cc.getDeclaredMethod("doDispatch");
             System.out.println("method : " + m);
             m.insertBefore("{ java.util.Enumeration params = $1.getParameterNames(); while(params.hasMoreElements()) { String paramName = (String) params.nextElement(); System.out.println(\"<<<<<<<>>>>>>> \" + paramName + \" : \" + $1.getParameter(paramName)); } }");
