@@ -28,7 +28,7 @@ public class Agent {
             CtClass cc = cp.get("org.springframework.web.servlet.DispatcherServlet");
             CtMethod m = cc.getDeclaredMethod("doDispatch");
             System.out.println("method : " + m);
-            m.insertBefore("{ java.util.Enumeration params = $1.getParameterNames(); while(params.hasMoreElements()) { String paramName = (String) params.nextElement(); System.out.println(paramName + \" : \" + $1.getParameter(paramName)); } }");
+            m.insertBefore("{ java.util.Enumeration params = $1.getParameterNames(); while(params.hasMoreElements()) { String paramName = (String) params.nextElement(); System.out.println(\"<<<<<<<>>>>>>> \" + paramName + \" : \" + $1.getParameter(paramName)); } }");
             byte[] byteCode = cc.toBytecode();
             cc.detach();
             return byteCode;
