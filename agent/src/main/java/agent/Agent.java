@@ -22,15 +22,18 @@ public class Agent {
       @Override
       public byte[] transform(ClassLoader classLoader, String s, Class<?> aClass, ProtectionDomain protectionDomain, byte[] bytes) throws IllegalClassFormatException {
         // En caso de que se necesite modificar la clase que se desea intervenir se agregar cambia aqui pero a modo de que fuesen carpetas
-        if ("org/springframework/web/servlet/DispatcherServlet".equals(s)) {
+        //if ("org/springframework/web/servlet/DispatcherServlet".equals(s)) {
+        if ("org/apache/jsp/index_jsp".equals(s)) {
           try {
             ClassPool cp = ClassPool.getDefault();
             // Se carga el class loader del web
             cp.insertClassPath(new LoaderClassPath(classLoader));
             // Se carga la clase necesaria con el qualified name
-            CtClass cc = cp.get("org.springframework.web.servlet.DispatcherServlet");
+            System.out.println("s : " + s);
+            CtClass cc = cp.get(s.replaceAll("/", "."));
             // Se interviene el metodo que se requiere
-            CtMethod m = cc.getDeclaredMethod("doDispatch");
+            System.out.println("class : " + cc);
+            CtMethod m = cc.getDeclaredMethod("_jspService");
             System.out.println("method : " + m);
             m.insertBefore("{ java.util.Enumeration params = $1.getParameterNames(); while(params.hasMoreElements()) { String paramName = (String) params.nextElement(); System.out.println(\"<<<<<<<>>>>>>> \" + paramName + \" : \" + $1.getParameter(paramName)); } }");
             byte[] byteCode = cc.toBytecode();
